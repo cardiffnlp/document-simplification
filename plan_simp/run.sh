@@ -1,0 +1,15 @@
+python plan_simp/scripts/train_clf.py \
+  --train_file=$1 \
+  --val_file=$2 \
+  --x_col=complex \
+  --y_col=label \
+  --batch_size=64 \
+  --learning_rate=1e-5 \
+  --ckpt_metric=val_macro_f1 \
+  --add_context \
+  --context_doc_id=pair_id  \
+  --context_dir=$3 \
+  --context_window=13 \
+  --doc_pos_embeds \
+  --simple_context_doc_id=pair_id \
+  --simple_context_dir=$4 \
