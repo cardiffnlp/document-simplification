@@ -143,6 +143,8 @@ def extract_dataset(input_dir):
                         doc_quin = math.ceil((index + 1) / width)
                         csv_row = [title, pair_id, index, complex, label, 
                                    simple, simp_index, doc_pos, doc_quin, c_len_sent]
+                        if args.newsela:
+                            csv_row.append(int(pair_id[-1]))
                         dataset_rows.append(csv_row)
                         
                         if pair_id in ["71514", "7717", "1657", "111775"]:   
