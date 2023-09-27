@@ -56,6 +56,7 @@ class RobertaDataModule(pl.LightningDataModule):
             self.hparams.reading_lvl = None
         tok_cols = [self.hparams.src_lvl, self.hparams.reading_lvl]
         self.ctrl_tokens = [t for t in tok_cols if t is not None]
+        print(self.ctrl_tokens)
 
     def setup(self, stage):
         # read and prepare input data

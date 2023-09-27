@@ -46,8 +46,8 @@ if __name__ == '__main__':
     mode = "max" if args.ckpt_metric.split("_")[-1] == "f1" else "min"
     checkpoint_callback = ModelCheckpoint(monitor=args.ckpt_metric, mode=mode, save_top_k=1, save_last=True)
     
-    early_stop_callback = EarlyStopping(monitor="val_macro_f1", min_delta=0.000, patience=1, verbose=False, mode="max")
-    print(checkpoint_callback)
+    # early_stop_callback = EarlyStopping(monitor="val_macro_f1", min_delta=0.000, patience=3, verbose=False, mode="max")
+    # print(checkpoint_callback)
     trainer = pl.Trainer.from_argparse_args(
         args,
         val_check_interval=args.val_check_interval,
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         accelerator="gpu",
         strategy="ddp",
         #plugins=DDPStrategy(find_unused_parameters=True),
-        callbacks=[checkpoint_callback, early_stop_callback],
+        callbacks=[checkpoint_callback],
         precision=16,)
 
     trainer.fit(model, dm)
