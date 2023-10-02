@@ -10,9 +10,11 @@ from llama_recipes.datasets.utils import Concatenator
 def get_preprocessed_swipe(dataset_config, tokenizer, split):
 
     dataset = load_dataset('json', data_files={'train': '/home/ubuntu/simplfication/experiments/swipe/swipe_train.json', 
-                                               'test': '/home/ubuntu/simplfication/experiments/swipe/swipe_val.json',
-                                               'validation': '/home/ubuntu/simplfication/experiments/swipe/swipe_test_id.json'},
+                                               'validation': '/home/ubuntu/simplfication/experiments/swipe/swipe_val.json'},
                                                split=split)
+    # dataset = load_dataset('json', data_files={'train': '/home/ubuntu/simplfication/experiments/newsela_auto_llama/0-3-paragraph/train.json', 
+                                            #    'validation': '/home/ubuntu/simplfication/experiments/newsela_auto_llama/0-3-paragraph/valid.json'},
+                                            #    split=split)
     instruct_flag = True
     if instruct_flag:
         prompt = (f"{{bos_token}} [INST] <<SYS>> You are a helpful, respectful and honest assistant. Please make the following text simpler. <</SYS>>\n\n{{input}} [/INST]\n{{output}}{{eos_token}}")
@@ -34,6 +36,7 @@ def get_preprocessed_swipe(dataset_config, tokenizer, split):
 
     print(dataset)
     print(dataset[0]['text'])
+    print(dataset[15]['text'])
      
     dataset = dataset.map(
         lambda sample: tokenizer(sample["text"]),
