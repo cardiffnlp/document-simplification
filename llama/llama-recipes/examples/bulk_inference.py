@@ -31,13 +31,22 @@ if __name__ == '__main__':
     for json_instance in data:
         input_ = json_instance["r_content"]
 
+        if len(input_) > 10000:
+            output = {
+                "input": input_,
+                "prompt": "",
+                "output": "",
+                "target": json_instance["s_content"],
+            }
+            output_jsons.append(output)
+            index += 1
+            continue
+
         if args.instruct_flag:
             eval_prompt =  "<s>[INST] <<SYS>>You are a helpful, respectful and honest assistant. Please rewrite the following text into simpler language that is easier to understand while retaining the original meaning. " + \
             " <</SYS>>\n\n" + input_ + "[/INST]\n"
         else:
-            prompt = "<s>Simplify the following text:\n" + input_ + "\n---\nSimplified text:\n"
-
-
+            eval_prompt = "<s>Rewrite the following text into simpler language that is easier to understand while retaining the original meaning:\n" + input_ + "\n---\nSimplified text:\n"
 
         model_input = tokenizer(eval_prompt, return_tensors="pt").to("cuda")
         with torch.no_grad():

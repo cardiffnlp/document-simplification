@@ -15,11 +15,11 @@ def get_preprocessed_swipe(dataset_config, tokenizer, split):
     # dataset = load_dataset('json', data_files={'train': '/home/ubuntu/simplfication/experiments/newsela_auto_llama/0-3-paragraph/train.json', 
                                             #    'validation': '/home/ubuntu/simplfication/experiments/newsela_auto_llama/0-3-paragraph/valid.json'},
                                             #    split=split)
-    instruct_flag = True
+    instruct_flag = False
     if instruct_flag:
-        prompt = (f"{{bos_token}} [INST] <<SYS>> You are a helpful, respectful and honest assistant. Please make the following text simpler. <</SYS>>\n\n{{input}} [/INST]\n{{output}}{{eos_token}}")
+        prompt = (f"{{bos_token}} [INST] <<SYS>> You are a helpful, respectful and honest assistant. Please rewrite the following text into simpler language that is easier to understand while retaining the original meaning. <</SYS>>\n\n{{input}} [/INST]\n{{output}}{{eos_token}}")
     else:
-        prompt = (f"{{bos_token}}Simplify the following text:\n{{input}}\n---\nSimplified text:\n{{output}}{{eos_token}}")
+        prompt = (f"{{bos_token}}Rewrite the following text into simpler language that is easier to understand while retaining the original meaning:\n{{input}}\n---\nSimplified text:\n{{output}}{{eos_token}}")
 
 
     def apply_prompt_template(sample):
