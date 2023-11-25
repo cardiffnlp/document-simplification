@@ -7,6 +7,11 @@ from transformers import LlamaForCausalLM, LlamaTokenizer
 
 from llama_recipes.inference.model_utils import load_peft_model
 
+# You are a helpful, respectful and honest assistant. Please rewrite the following text at X level
+
+# Rewrite the following medical technical abstract into plain language, making it accessible and understandable for a non-expert audience. Use simple language, avoid technical terms, and focus on the key findings, implications, and practical takeaways from the research.
+
+# Rewrite the following medical abstract in plain language for a non-expert audience.
 
 if __name__ == '__main__':
 
@@ -44,8 +49,9 @@ if __name__ == '__main__':
         #     index += 1
         #     continue
 
+        
         if args.instruct_flag:
-            eval_prompt =  "<s>[INST] <<SYS>>You are a helpful, respectful and honest assistant. Please rewrite the following text at " + args.cefr + " level." + \
+            eval_prompt =  "<s>[INST] <<SYS>Rewrite the following medical technical abstract into plain language, making it accessible and understandable for a non-expert audience. Use simple language, avoid technical terms, and do not report statistical data such as summary statistics and confidence intervals.  Where possible, present the results as numbers as well as narrative statements so that the reader can judge the results for themselves." + \
             " <</SYS>>\n" + input_ + "[/INST]\n"
         else:
             eval_prompt = "<s>Rewrite the following text into simpler language that is easier to understand while retaining the original meaning:\n" + input_ + "\n---\nSimplified text:\n"
