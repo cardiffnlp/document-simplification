@@ -1,6 +1,10 @@
 import json
 import argparse
 
+import sys
+
+sys.path.append('/Users/mmaddela3/Documents/simplification_evaluation/external_repos/google-research') 
+
 
 from metrics.sari import SARI
 from metrics.bleu import BLEU
@@ -9,6 +13,8 @@ from metrics.D_SARI import DSARI
 from metrics.bscore import BERTScore
 from metrics.lens_metric import LENS_metric
 from metrics.sle_metric import SLE_metric
+from metrics.smart_metric import SMART
+from metrics.matching_functions import BleuMatchingFunction, SARIMatchingFunction
 
 def compute_pairwise_metrics(dataset, metrics):
     for metric in metrics:
@@ -67,6 +73,7 @@ if __name__ == '__main__':
 
     metrics = [SARI(), BLEU(), GLEU(), 
                DSARI(), 
+               SMART(matcher=SARIMatchingFunction()),
             #  LENS_metric(args.lens),
             # BERTScore(), 
             # BERTScore(self_flag=True),

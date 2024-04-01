@@ -44,8 +44,10 @@ def sentence_bleu(
 
 class BLEU:
 
-	name = "BLEU"
+    name = "BLEU"
 
-	def compute_metric(self, complex, simplified, references):
-		score = sentence_bleu(simplified, references, lowercase=True)
-		return score
+    def compute_metric(self, complex, simplified, references):
+        # print("***simplifed\n", simplified)
+        # print("***references\n", references)
+        score = sentence_bleu(simplified, references, lowercase=True)
+        return score
