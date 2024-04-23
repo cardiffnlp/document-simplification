@@ -3,7 +3,7 @@ import argparse
 
 import sys
 
-sys.path.append('/Users/mmaddela3/Documents/simplification_evaluation/external_repos/google-research') 
+# sys.path.append('/Users/mmaddela3/Documents/simplification_evaluation/external_repos/google-research') 
 
 
 from metrics.sari import SARI
@@ -13,19 +13,32 @@ from metrics.D_SARI import DSARI
 from metrics.bscore import BERTScore
 from metrics.lens_metric import LENS_metric
 from metrics.sle_metric import SLE_metric
-from metrics.smart_metric import SMART
-from metrics.matching_functions import BleuMatchingFunction, SARIMatchingFunction
+# from metrics.smart_metric import SMART
+# from metrics.matching_functions import BleuMatchingFunction, SARIMatchingFunction
+from metrics.my_alignment_metric_v3 import MyAlignmentMetric
 
 def compute_pairwise_metrics(dataset, metrics):
     for metric in metrics:
-        for instance in dataset:
+        cache = {}
+        for ind, instance in enumerate(dataset):
+            print("instance ", ind)
             org = instance["original"]
             simp1 = instance["simplification1"]
             simp2 = instance["simplification2"]
             refs = instance["references"]
 
-            mval1 = metric.compute_metric(org, simp1, refs)
-            mval2 = metric.compute_metric(org, simp2, refs)
+            key = (org, simp1, tuple(refs))
+            if key not in cache: 
+                cache[key] = metric.compute_metric(org, simp1, refs)
+            mval1 = cache[key]
+
+            key = (org, simp2, tuple(refs))
+            if key not in cache: 
+                cache[key] = metric.compute_metric(org, simp2, refs)
+            mval2 = cache[key]
+
+            # mval1 = metric.compute_metric(org, simp1, refs)
+            # mval2 = metric.compute_metric(org, simp2, refs)         
             instance.setdefault("metrics", {})
             instance["metrics"].setdefault(metric.name, {})
             instance["metrics"][metric.name]= {
@@ -66,22 +79,25 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument("--dataset")
     parser.add_argument("--lens")
+    parser.add_argument("--bert")
     args=parser.parse_args()
 
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
 
-    metrics = [SARI(), BLEU(), GLEU(), 
-               DSARI(), 
-               SMART(matcher=SARIMatchingFunction()),
-            #  LENS_metric(args.lens),
+    metrics = [
+            # SARI(), BLEU(), GLEU(), 
+            #    DSARI(), 
+            #    SMART(matcher=SARIMatchingFunction()),
+            # LENS_metric(args.lens),
+            MyAlignmentMetric(args.lens),
             # BERTScore(), 
             # BERTScore(self_flag=True),
             # SLE_metric(True),
             # SLE_metric(False)
     ]
     compute_pairwise_metrics(dataset, metrics)
-    print(dataset[100])
+    # print(dataset[100])
 
     correlation_values = pairwise_kendall(dataset)
     for dimen in correlation_values:
