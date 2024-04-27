@@ -45,9 +45,10 @@ def sentence_bleu(
 class BLEU:
 
     name = "BLEU"
-
+    
     def compute_metric(self, complex, simplified, references):
-        # print("***simplifed\n", simplified)
-        # print("***references\n", references)
-        score = sentence_bleu(simplified, references, lowercase=True)
-        return score
+        scores = []
+        for single_simp, single_refs in zip(simplified, references):
+            score = sentence_bleu(single_simp, single_refs, lowercase=True)
+            scores.append(score)
+        return scores

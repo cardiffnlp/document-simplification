@@ -201,7 +201,10 @@ class GLEU:
 	name = "GLEU"
 
 	def compute_metric(self, complex, simplified, references):
-
-		refs = [word_tokenize(ref.lower()) for ref in references]
-		hyp = word_tokenize(simplified.lower())
-		return sentence_gleu(refs, hyp) * 100.0
+		scores = []
+		for single_simp, single_refs in zip(simplified, references):
+			refs = [word_tokenize(ref.lower()) for ref in single_refs]
+			hyp = word_tokenize(single_simp.lower())
+			score = sentence_gleu(refs, hyp) * 100.0
+			scores.append(score)
+		return scores

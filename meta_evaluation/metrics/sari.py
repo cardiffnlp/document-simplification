@@ -216,10 +216,15 @@ def SARIsent(ssent, csent, rsents):
 class SARI:
 
 	name = "SARI"
-
+	
 	def compute_metric(self, complex, simplified, references):
-		_, _, _, score = SARIsent(complex, simplified, references)
-		return score[0] * 100.0
+
+		scores = []
+		for single_comp, single_simp, single_refs in zip(complex, 
+												   simplified, references):
+			_, _, _, score = SARIsent(single_comp, single_simp, single_refs)
+			scores.append(score[0] * 100.0)
+		return scores
 
 
 

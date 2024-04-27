@@ -300,27 +300,13 @@ def D_SARIsent(ssent, csent, rsents):
 
 class DSARI:
 
-	name = "DSARI"
+    name = "DSARI"
+ 
+    def compute_metric(self, complex, simplified, references):
 
-	def compute_metric(self, complex, simplified, references):
-		score, _, _, _ = D_SARIsent(complex, simplified, references)
-		return score * 100.0
-    
-
-# def main():
-
-#     ssent = "marengo is a town in and the county seat of iowa county , iowa , united states . it has served as the county seat since august 1845 , even though it was not incorporated until july 1859 . the population was 2,528 in the 2010 census , a decline from 2,535 in 2000 ."
-
-#     csent1 = "in the US . 2,528 in 2010 ."
-#     csent2 = "marengo is a city in iowa , the US . it has served as the county seat since august 1845 , even though it was not incorporated . the population was 2,528 in the 2010 census , a decline from 2,535 in 2010 ."
-#     csent3 = "marengo is a town in iowa . marengo is a town in the US . in the US . the population was 2,528 . the population in the 2010 census ."
-#     csent4 = "marengo is a town in iowa , united states . in 2010 , the population was 2,528 ."
-#     rsents = ["marengo is a city in iowa in the US . the population was 2,528 in 2010 ."]
-    
-#     print(D_SARIsent(ssent, csent1, rsents))
-#     print(D_SARIsent(ssent, csent2, rsents))
-#     print(D_SARIsent(ssent, csent3, rsents))
-#     print(D_SARIsent(ssent, csent4, rsents))
-    
-# if __name__ == '__main__':
-#     main()
+        scores = []
+        for single_comp, single_simp, single_refs in zip(complex, 
+                                                   simplified, references):
+            score, _, _, _ = D_SARIsent(single_comp, single_simp, single_refs)
+            scores.append(score * 100.0)
+        return scores
