@@ -27,5 +27,4 @@ class REFEREE:
             model_out = self.model(model_input)
             score = model_out[:, -1].item()
             scores.append(score)
-            print(score)
         return scores
