@@ -117,12 +117,13 @@ class AggMeticGraph:
     def __init__(self, bert_path, sent_metric):
         self.name = "Aggregation Metric Graph -" + sent_metric.name
 
-        self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
-                                        do_lower_case=True)
-        self.alignment_model = BertForSequenceClassification.from_pretrained(
-                                        bert_path, 
-                                        output_hidden_states=True)
-        self.alignment_model.eval()
+        if bert_path is not None:
+            self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
+                                            do_lower_case=True)
+            self.alignment_model = BertForSequenceClassification.from_pretrained(
+                                            bert_path, 
+                                            output_hidden_states=True)
+            self.alignment_model.eval()
         self.sent_model = sent_metric
         self.cache = AggMeticGraph.CACHE
         super().__init__()
@@ -174,6 +175,11 @@ class AggMeticGraph:
                         all_comps.append(cs)
                         all_cands.append(ss)
                         all_refs.append([rs])
+
+                if len(all_cands) == 0:
+                    all_comps = [complex]
+                    all_cands = [simplified]
+                    all_refs = [[reference]]
                 
                 self.cache[key] = [all_comps, all_cands, all_refs]
 

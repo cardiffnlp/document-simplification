@@ -111,14 +111,15 @@ class AggMeticGraphNoComplex:
     CACHE = {}
 
     def __init__(self, bert_path, sent_metric):
-        self.name = "Aggregation Metric Graph -" + sent_metric.name
+        self.name = "Aggregation Metric Graph No Complex -" + sent_metric.name
 
-        self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
-                                        do_lower_case=True)
-        self.alignment_model = BertForSequenceClassification.from_pretrained(
-                                        bert_path, 
-                                        output_hidden_states=True)
-        self.alignment_model.eval()
+        if bert_path is not None:
+            self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
+                                            do_lower_case=True)
+            self.alignment_model = BertForSequenceClassification.from_pretrained(
+                                            bert_path, 
+                                            output_hidden_states=True)
+            self.alignment_model.eval()
         self.sent_model = sent_metric
         self.cache = AggMeticGraphNoComplex.CACHE
         super().__init__()
@@ -131,7 +132,7 @@ class AggMeticGraphNoComplex:
 
         ref_scores = []
         for reference in references:
-            key = (simplified, reference) 
+            key = (simplified, reference)
             if key not in self.cache:
 
                 # print("**"* 20)
@@ -150,7 +151,7 @@ class AggMeticGraphNoComplex:
                 consturct_graph(adj_list, rc_matrix, 'r', 's')
                 consturct_graph(adj_list, cr_matrix, 's', 'r')
 
-                all_cands, all_refs = [], []
+                all_comps, all_cands, all_refs = [], [], []
                 node_groups = bfs(adj_list)
                 for group in node_groups:
                     if len(group) > 1:
@@ -162,11 +163,17 @@ class AggMeticGraphNoComplex:
                         # print(rs)
                         all_cands.append(ss)
                         all_refs.append([rs])
-                
-                self.cache[key] = [all_cands, all_refs]
+                        all_comps.append("")
 
-            all_cands, all_refs = self.cache[key]
-            scores = self.sent_model.compute_metric([], all_cands, all_refs)
+                if len(node_groups) == 0:
+                    all_comps = [""]
+                    all_cands = [simplified]
+                    all_refs = [[reference]]
+                
+                self.cache[key] = [all_comps, all_cands, all_refs]
+
+            all_comps, all_cands, all_refs = self.cache[key]
+            scores = self.sent_model.compute_metric(all_comps, all_cands, all_refs)
             ref_scores.append(np.mean(scores))
 
         # print(ref_scores)

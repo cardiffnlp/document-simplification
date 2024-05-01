@@ -24,7 +24,7 @@ class BERTScore:
                                         return_hash=True, verbose=True, idf=False,
                                         model_type=self.model_name, batch_size=4)
         else:
-            (_, _, Fs), _ = bert_score.score(all_cands, references, lang="en", 
+            (_, _, Fs), _ = bert_score.score(all_cands, all_references, lang="en", 
                                         return_hash=True, verbose=True, idf=False,
                                         model_type=self.model_name, batch_size=4)
         

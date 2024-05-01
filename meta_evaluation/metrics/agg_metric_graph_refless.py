@@ -109,14 +109,14 @@ class AggMeticGraphRefless:
     CACHE = {}
 
     def __init__(self, bert_path, sent_metric):
-        self.name = "Aggregation Metric Graph -" + sent_metric.name
-
-        self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
-                                        do_lower_case=True)
-        self.alignment_model = BertForSequenceClassification.from_pretrained(
-                                        bert_path, 
-                                        output_hidden_states=True)
-        self.alignment_model.eval()
+        self.name = "Aggregation Metric Graph Refless -" + sent_metric.name
+        if bert_path is not None:
+            self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
+                                            do_lower_case=True)
+            self.alignment_model = BertForSequenceClassification.from_pretrained(
+                                            bert_path, 
+                                            output_hidden_states=True)
+            self.alignment_model.eval()
         self.sent_model = sent_metric
         self.cache = AggMeticGraphRefless.CACHE
         super().__init__()
@@ -146,7 +146,7 @@ class AggMeticGraphRefless:
             consturct_graph(adj_list, sc_matrix, 's', 'c')
             consturct_graph(adj_list, cs_matrix, 'c', 's')
 
-            all_comps, all_cands = [], []
+            all_comps, all_cands, all_refs = [], [], []
             node_groups = bfs(adj_list)
             for group in node_groups:
                 cs = sorted([int(node[1:]) for node in group if node.startswith('c')])
@@ -157,11 +157,17 @@ class AggMeticGraphRefless:
                 # print(ss)
                 all_comps.append(cs)
                 all_cands.append(ss)
-                         
-            self.cache[key] = [all_comps, all_cands]
+                all_refs.append([])
 
-        all_comps, all_cands = self.cache[key]
-        scores = self.sent_model.compute_metric(all_comps, all_cands, [])
+            if len(node_groups) == 0:
+                all_comps = [complex]
+                all_cands = [simplified]
+                all_refs = [[]]
+                         
+            self.cache[key] = [all_comps, all_cands, all_refs]
+
+        all_comps, all_cands, all_refs = self.cache[key]
+        scores = self.sent_model.compute_metric(all_comps, all_cands, all_refs)
         return np.mean(scores)
     
 

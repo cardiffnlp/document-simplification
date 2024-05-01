@@ -3,7 +3,7 @@ import argparse
 
 import sys
 sys.path.append("/Users/mmaddela3/Documents/simplification_evaluation/external_repos/referee/code")
-
+sys.path.append("/Users/mmaddela3/Documents/simplification_evaluation/external_repos/swipe")
 
 from metrics.sari import SARI
 from metrics.bleu import BLEU
@@ -13,6 +13,12 @@ from metrics.bscore import BERTScore
 from metrics.lens_metric import LENS_metric
 from metrics.sle_metric import SLE_metric
 from metrics.referee import REFEREE
+from metrics.agg_metric_graph import AggMeticGraph
+from metrics.agg_metric_graph_refless import AggMeticGraphRefless
+from metrics.agg_metric_graph_no_complex import AggMeticGraphNoComplex
+from metrics.agg_metric_edit_no_complex import AggMeticEditNoComplex
+from metrics.agg_metric_edit_refless import AggMeticEditRefless
+from metrics.agg_metric_edit import AggMeticEdit
 
 
 def compute_metrics(dataset, metric):
@@ -88,21 +94,43 @@ def pairwise_kendall(dataset):
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument("--lens")
+    parser.add_argument("--bert")
     parser.add_argument("--dataset")
+    parser.add_argument("--output")
     args=parser.parse_args()
 
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
 
-        metrics = [SARI(), 
-                   BLEU(), 
-                   GLEU(),
-                   DSARI(), 
-                   BERTScore(),
-                   LENS_metric(args.lens),
-                   SLE_metric(True),
-                   SLE_metric(False),
-                   REFEREE()]
+        # lens_instance = LENS_metric(args.lens)
+        # referee = REFEREE()
+        # bert_scorem = BERTScore()
+
+        metrics = [
+                #    SARI(),
+                #    AggMeticGraph(args.bert, SARI()),
+                #    BLEU(), 
+                #    AggMeticGraphNoComplex(args.bert, BLEU()),
+                #    GLEU(),
+                #    AggMeticGraphNoComplex(None, GLEU()),
+                #    DSARI(),
+                #    bert_scorem,
+                #    AggMeticGraphNoComplex(None, bert_scorem),
+                #    SLE_metric(True),
+                #    AggMeticGraphRefless(args.bert, SLE_metric(True)),
+                #    SLE_metric(False),
+                #    LENS_metric(args.lens),
+                #    AggMeticGraph(None, LENS_metric(args.lens)),
+                #    referee,
+                #    AggMeticGraphRefless(None, referee),
+                AggMeticEditRefless(SLE_metric(True)),
+                AggMeticEditRefless(REFEREE()),
+                AggMeticEditNoComplex(BLEU()),
+                AggMeticEditNoComplex(GLEU()),
+                AggMeticEditNoComplex(BERTScore()),
+                AggMeticEdit(SARI()),
+                AggMeticEdit(LENS_metric(args.lens))
+        ]
         
         compute_metrics(dataset, metrics)
 
@@ -117,6 +145,7 @@ if __name__ == '__main__':
                     tau = (concordant - discordant) / (concordant + discordant)
                     print(tau, concordant, discordant)
 
-    with open("results_v3.json", 'w') as fp:
-        json.dump(dataset, fp)
+        with open(args.output, 'w') as fp:
+            json.dump(dataset, fp)
+
 

@@ -113,5 +113,4 @@ if __name__ == '__main__':
                     }
                     ratings_list.append(ratings)
                 data_json['ratings'] = ratings_list
-
-            fp.write(json.dumps(data_json) + "\n")
+                fp.write(json.dumps(data_json) + "\n")
