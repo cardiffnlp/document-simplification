@@ -114,9 +114,10 @@ class AggMeticGraph:
 
     CACHE = {}
 
-    def __init__(self, bert_path, sent_metric):
+    def __init__(self, bert_path, sent_metric, weighted=False):
         self.name = "Aggregation Metric Graph -" + sent_metric.name
-
+        if weighted:
+            self.name += " Weighted"
         if bert_path is not None:
             self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
                                             do_lower_case=True)
@@ -126,8 +127,8 @@ class AggMeticGraph:
             self.alignment_model.eval()
         self.sent_model = sent_metric
         self.cache = AggMeticGraph.CACHE
+        self.weighted = weighted
         super().__init__()
-
 
     def compute_metric_single(self, complex, simplified, references):
 
@@ -185,7 +186,14 @@ class AggMeticGraph:
 
             all_comps, all_cands, all_refs = self.cache[key]
             scores = self.sent_model.compute_metric(all_comps, all_cands, all_refs)
-            ref_scores.append(np.mean(scores))
+            if self.weighted:
+                lens = [len(a) + len(b) + len(c[0]) for a, b, c, in 
+                        zip(all_comps, all_cands, all_refs)]
+                lens = torch.Tensor(lens) / sum(lens)
+                final_score = sum(lens * torch.Tensor(scores)).item()
+            else:
+                final_score = np.mean(scores)
+            ref_scores.append(final_score)
 
         # print(ref_scores)
         return max(ref_scores)

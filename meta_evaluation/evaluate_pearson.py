@@ -21,7 +21,7 @@ from metrics.agg_metric_graph_no_complex import AggMeticGraphNoComplex
 from metrics.agg_metric_edit_no_complex import AggMeticEditNoComplex
 from metrics.agg_metric_edit_refless import AggMeticEditRefless
 from metrics.agg_metric_edit import AggMeticEdit
-
+from metrics.smart_eval import SmartScorer
 
 from scipy.stats import pearsonr
 
@@ -85,26 +85,26 @@ if __name__ == '__main__':
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
 
-        # lens_instance = LENS_metric(args.lens)
+        lens_instance = LENS_metric(args.lens)
         referee = REFEREE()
-        # bert_scorem = BERTScore()
+        bert_scorem = BERTScore()
+        sle_metric = SLE_metric(True)
 
         metrics = [
-                   SARI(),
+                #    SARI(),
                 #    AggMeticGraph(args.bert, SARI()),
                 #    BLEU(), 
                 #    AggMeticGraphNoComplex(args.bert, BLEU()),
                 #    GLEU(),
                 #    AggMeticGraphNoComplex(None, GLEU()),
-                   DSARI(),
+                #    DSARI(),
                 #    bert_scorem,
                 #    AggMeticGraphNoComplex(None, bert_scorem),
                 #    SLE_metric(True),
                 #    AggMeticGraphRefless(args.bert, SLE_metric(True)),
                 #    SLE_metric(False),
-                   LENS_metric(args.lens),
-                   AggMeticGraph(args.bert, LENS_metric(args.lens)),
-                   AggMeticGraph(None, SARI()),
+                #    LENS_metric(args.lens),
+                #    AggMeticGraph(args.bert, LENS_metric(args.lens)),
                 #    referee,
                 #    AggMeticGraphRefless(None, referee),
 
@@ -115,6 +115,22 @@ if __name__ == '__main__':
                 # AggMeticEditNoComplex(BERTScore()),
                 # AggMeticEdit(SARI()),
                 # AggMeticEdit(LENS_metric(args.lens))
+
+                SmartScorer(matching_fn=BLEU()),
+                SmartScorer(matching_fn=BLEU(), final_smart_type='smart2'),
+                SmartScorer(matching_fn=BLEU(), final_smart_type='smart1'),
+                SmartScorer(matching_fn=GLEU()),
+                SmartScorer(matching_fn=GLEU(), final_smart_type='smart2'),
+                SmartScorer(matching_fn=GLEU(), final_smart_type='smart1'),
+                SmartScorer(bert_scorem),
+                SmartScorer(bert_scorem, final_smart_type='smart2'),
+                SmartScorer(bert_scorem, final_smart_type='smart1'),
+                SmartScorer(referee),
+                SmartScorer(referee, final_smart_type='smart2'),
+                SmartScorer(referee, final_smart_type='smart1'),
+                SmartScorer(sle_metric),
+                SmartScorer(sle_metric, final_smart_type='smart2'),
+                SmartScorer(sle_metric, final_smart_type='smart1'),
         ]
         
         compute_metrics(dataset, metrics)
