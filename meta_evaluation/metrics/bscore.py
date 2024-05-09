@@ -22,11 +22,11 @@ class BERTScore:
         if self.self_flag:
             (_, _, Fs), _ = bert_score.score(all_cands, all_comps, lang="en", 
                                         return_hash=True, verbose=True, idf=False,
-                                        model_type=self.model_name, batch_size=4)
+                                        model_type=self.model_name, batch_size=64)
         else:
             (_, _, Fs), _ = bert_score.score(all_cands, all_references, lang="en", 
                                         return_hash=True, verbose=True, idf=False,
-                                        model_type=self.model_name, batch_size=4)
+                                        model_type=self.model_name, batch_size=64)
         
         scores = []
         ind = 0

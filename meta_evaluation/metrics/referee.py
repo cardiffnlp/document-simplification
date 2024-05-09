@@ -2,9 +2,9 @@ import torch
 
 from models.deberta_for_eval import DebertaForEval
 
-DERBERTA_MODEL_DIR = "/Users/mmaddela3/Documents/simplification_evaluation/external_models/pretrained/checkpoints/deberta/"
-DERBERTA_TOKENIZER_DIR = "/Users/mmaddela3/Documents/simplification_evaluation/external_models/pretrained/tokenizers/deberta"
-CHECKPOINTS_DIR = "/Users/mmaddela3/Documents/simplification_evaluation/external_models/overall_ratings_checkpoints"
+DERBERTA_MODEL_DIR = "/home/ubuntu/simplification/external/referee/pretrained/checkpoints/deberta"
+DERBERTA_TOKENIZER_DIR = "/home/ubuntu/simplification/external/referee/pretrained/tokenizers/deberta"
+CHECKPOINTS_DIR = "/home/ubuntu/simplification/external/referee/pretrained"
 
 class REFEREE:
 

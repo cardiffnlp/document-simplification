@@ -49,6 +49,7 @@ def expand_edit_group(edits, edit_group):
 
 def edit_alignment(bic, textA, textB):
     edit_groups, edits = bic.predict_from_text_pair(textA, textB)
+    print(edits)
     edit_groups = [expand_edit_group(edits, group) for group in edit_groups]
     edit2sentsA, textA_sents = get_edits_to_sentences_mapping(edits, ['equal', 'delete']) 
     edit2sentsB, textB_sents = get_edits_to_sentences_mapping(edits, ['equal', 'insert'])    
@@ -96,6 +97,11 @@ def get_sents(alignmentAB, textA_sents, textB_sents):
     for ab_a, ab_b in alignmentAB.items():
         textA.append(" ".join([textA_sents[ind] for ind in ab_a if ind < len(textA_sents)]).replace(" .", ".").replace(" ,", ","))
         textB.append(" ".join([textB_sents[ind] for ind in ab_b if ind < len(textB_sents)]).replace(" .", ".").replace(" ,", ","))
+
+    for a, b in zip(textA, textB):
+        print(a)
+        print(b)
+        print()
     return textA, textB
 
 
@@ -117,7 +123,9 @@ class AggMeticEditRefless:
             all_comps = [complex]
             all_cands = [simplified]
             all_refs = [[]]
+        
         scores = self.sent_metric.compute_metric(all_comps, all_cands, all_refs)
+        print(scores)
         return np.mean(scores)
     
     def compute_metric(self, complex, simplified, references) :

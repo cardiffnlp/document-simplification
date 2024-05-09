@@ -56,6 +56,8 @@ def get_similarity_score_from_sent_pair(sentA_list, sentB_list, model,
     eval_sampler = SequentialSampler(dataset)
     eval_dataloader = DataLoader(dataset, sampler=eval_sampler, batch_size=8)
     for batch in eval_dataloader:
+        my_device = torch.device('cuda:0')
+        batch = tuple(t.to(my_device) for t in batch)
         with torch.no_grad():
             inputs = {'input_ids': batch[0],
                       'attention_mask': batch[1],
@@ -80,9 +82,11 @@ def consturct_graph(adj_list, matrix, label_row, label_col):
         x = label_row + str(i)
         for j in range(n):
             y = label_col + str(j)
+            adj_list.setdefault(x, [])
+            adj_list.setdefault(y, [])
             if matrix[i][j] > 0.5:
-                adj_list.setdefault(x, [])
                 adj_list[x].append(y)
+                # adj_list[y].append(x)
 
           
 def bfs(adj_list):
@@ -91,7 +95,7 @@ def bfs(adj_list):
     visited = set()
 
     for key in adj_list:
-        if key not in visited:
+        if key not in visited and (key.startswith('s') or key.startswith('c')):
             queue.append(key)
             node_group = set()
             while len(queue) > 0:
@@ -104,7 +108,47 @@ def bfs(adj_list):
             print(key, node_group)
             node_groups.append(node_group)
     return node_groups
-    
+
+
+def merge_node_groups(node_groups):
+    single_nodes = []
+    new_node_groups = []
+    for group in node_groups:
+        if len(group) > 1:
+            new_node_groups.append(group)
+        else:
+            single_nodes.append(group)
+
+    for start in ['c', 's', 'r']:
+        single_nodes_of_type = []
+        for node in single_nodes:
+            node = list(node)[0]
+            if node.startswith(start):
+                num = int(node[1:])
+                single_nodes_of_type.append((num, num + 1))
+        single_nodes_of_type = sorted(single_nodes_of_type)
+
+        while len(single_nodes_of_type) > 1:
+            if single_nodes_of_type[0][1] == single_nodes_of_type[1][0]:
+                node = single_nodes_of_type.pop(0)
+                single_nodes_of_type[0] = (node[0], single_nodes_of_type[0][1])
+            else:
+                node = single_nodes_of_type.pop(0)
+                new_node_groups.append(set([start + str(i) for i in range(node[0], node[1])]))
+
+        if  len(single_nodes_of_type) == 1:
+                node = single_nodes_of_type.pop(0)
+                new_node_groups.append(set([start + str(i) for i in range(node[0], node[1])]))
+
+    print("Old groups")
+    for group in node_groups:
+        print(group)
+
+    print("New groups")
+    for group in new_node_groups:
+        print(group)
+
+    return new_node_groups
 
 class AggMeticGraphNoComplex:
 
@@ -118,7 +162,7 @@ class AggMeticGraphNoComplex:
                                             do_lower_case=True)
             self.alignment_model = BertForSequenceClassification.from_pretrained(
                                             bert_path, 
-                                            output_hidden_states=True)
+                                            output_hidden_states=True).to("cuda:0")
             self.alignment_model.eval()
         self.sent_model = sent_metric
         self.cache = AggMeticGraphNoComplex.CACHE
@@ -127,6 +171,7 @@ class AggMeticGraphNoComplex:
 
     def compute_metric_single(self, complex, simplified, references):
 
+        complex = complex.replace("\n", " ")
         simplified = simplified.replace("\n", " ")
         ssents = sent_tokenize(simplified)
 
@@ -152,9 +197,9 @@ class AggMeticGraphNoComplex:
                 consturct_graph(adj_list, cr_matrix, 's', 'r')
 
                 all_comps, all_cands, all_refs = [], [], []
-                node_groups = bfs(adj_list)
+                node_groups = merge_node_groups(bfs(adj_list))
                 for group in node_groups:
-                    if len(group) > 1:
+                    if any(g.startswith('s') for g in group):
                         ss = sorted([int(node[1:]) for node in group if node.startswith('s')])
                         rs = sorted([int(node[1:]) for node in group if node.startswith('r')])
                         ss = " ".join([ssents[i] for i in ss])
@@ -165,7 +210,7 @@ class AggMeticGraphNoComplex:
                         all_refs.append([rs])
                         all_comps.append("")
 
-                if len(node_groups) == 0:
+                if len(all_comps) == 0:
                     all_comps = [""]
                     all_cands = [simplified]
                     all_refs = [[reference]]

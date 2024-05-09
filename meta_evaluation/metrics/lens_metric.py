@@ -16,7 +16,7 @@ class LENS_metric:
         scores = self.lens_metric.score([c.lower() for c in complex], 
                                         [s.lower() for s in simplified],
                                         new_references,  
-                                    batch_size=4, gpus=0)
+                                    batch_size=16, gpus=1)
         
         assert len(scores) == len(complex) == len(simplified) == len(new_references)
         return scores

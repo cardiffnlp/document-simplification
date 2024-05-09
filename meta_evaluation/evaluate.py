@@ -2,8 +2,9 @@ import json
 import argparse
 
 import sys
-sys.path.append("/Users/mmaddela3/Documents/simplification_evaluation/external_repos/referee/code")
-sys.path.append("/Users/mmaddela3/Documents/simplification_evaluation/external_repos/swipe")
+sys.path.append("/home/ubuntu/simplification/external/referee/code")
+sys.path.append("/home/ubuntu/simplification/external/sle-main")
+sys.path.append("/home/ubuntu/simplification/external/swipe")
 
 from metrics.sari import SARI
 from metrics.bleu import BLEU
@@ -13,13 +14,13 @@ from metrics.bscore import BERTScore
 from metrics.lens_metric import LENS_metric
 from metrics.sle_metric import SLE_metric
 from metrics.referee import REFEREE
-from metrics.agg_metric_graph import AggMeticGraph
+from metrics.agg_metric_graph_v2 import AggMeticGraph
 from metrics.agg_metric_graph_refless import AggMeticGraphRefless
 from metrics.agg_metric_graph_no_complex import AggMeticGraphNoComplex
-from metrics.agg_metric_edit_no_complex import AggMeticEditNoComplex
+# from metrics.agg_metric_edit_no_complex import AggMeticEditNoComplex
 from metrics.agg_metric_edit_refless import AggMeticEditRefless
-from metrics.agg_metric_edit import AggMeticEdit
-from metrics.smart_eval import SmartScorer
+# from metrics.agg_metric_edit import AggMeticEdit
+# from metrics.smart_eval import SmartScorer
 
 
 def compute_metrics(dataset, metric):
@@ -103,52 +104,23 @@ if __name__ == '__main__':
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
 
-        # lens_instance = LENS_metric(args.lens)
-        referee = REFEREE()
-        bert_scorem = BERTScore()
-        sle_metric = SLE_metric(True)
-
         metrics = [
-                #    SARI(),
-                #    AggMeticGraph(args.bert, SARI()),
-                #    BLEU(), 
-                #    AggMeticGraphNoComplex(args.bert, BLEU()),
-                #    GLEU(),
-                #    AggMeticGraphNoComplex(None, GLEU()),
-                #    DSARI(),
-                #    bert_scorem,
-                #    AggMeticGraphNoComplex(None, bert_scorem),
-                #    SLE_metric(True),
-                #    AggMeticGraphRefless(args.bert, SLE_metric(True)),
-                #    SLE_metric(False),
-                   LENS_metric(args.lens),
-                   AggMeticGraph(args.bert, LENS_metric(args.lens)),
-                   AggMeticGraph(None, LENS_metric(args.lens), weighted=True),
-                #    referee,
-                #    AggMeticGraphRefless(None, referee),
-                # AggMeticEditRefless(SLE_metric(True)),
-                # AggMeticEditRefless(REFEREE()),
-                # AggMeticEditNoComplex(BLEU()),
-                # AggMeticEditNoComplex(GLEU()),
-                # AggMeticEditNoComplex(BERTScore()),
-                # AggMeticEdit(SARI()),
-                # AggMeticEdit(LENS_metric(args.lens))
-                    # SmartScorer(matching_fn=BLEU()),
-                    # SmartScorer(matching_fn=BLEU(), final_smart_type='smart2'),
-                    # SmartScorer(matching_fn=BLEU(), final_smart_type='smart1'),
-                    # SmartScorer(GLEU()),
-                    # SmartScorer(GLEU(), final_smart_type='smart2'),
-                    # SmartScorer(GLEU(), final_smart_type='smart1'),
-                    # SmartScorer(bert_scorem),
-                    # SmartScorer(bert_scorem, final_smart_type='smart2'),
-                    # SmartScorer(bert_scorem, final_smart_type='smart1'),
-                    # SmartScorer(referee),
-                    # SmartScorer(referee, final_smart_type='smart2'),
-                    # SmartScorer(referee, final_smart_type='smart1'),
-                    # SmartScorer(sle_metric),
-                    # SmartScorer(sle_metric, final_smart_type='smart2'),
-                    # SmartScorer(sle_metric, final_smart_type='smart1'),
-
+                   # SARI(),
+                   # AggMeticGraph(args.bert, SARI()),
+                   # BLEU(), 
+                   # AggMeticGraphNoComplex(args.bert, BLEU()),
+                   # GLEU(),
+                   # AggMeticGraphNoComplex(None, GLEU()),
+                   # DSARI(),
+                   # BERTScore(),
+                   # AggMeticGraphNoComplex(None, BERTScore()),
+                   # SLE_metric(True),
+                   # AggMeticGraphRefless(args.bert, SLE_metric(True)),
+                   # LENS_metric(args.lens),
+                   # AggMeticGraph(args.bert, LENS_metric(args.lens)),
+                   REFEREE(),
+                   AggMeticGraphRefless(args.bert, REFEREE())
+                   # AggMeticEditRefless(REFEREE())
         ]
         
         compute_metrics(dataset, metrics)
