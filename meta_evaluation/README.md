@@ -20,7 +20,7 @@ write the metric values for each instance in the `output.jsonl` file.
 
 ### Kendall Correlation on Cochrane dataset
 ```
-python3 evaluate_readability_kendall.py --dataset eval_datasets/cochrane_lj.jsonl --output output.jsonl 
+python3 evaluate_readability_kendall.py --dataset eval_datasets/cochrance_lj.jsonl --output output.jsonl 
 ```
 
 ### Pearson Correlation on OneStopQA dataset
