@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append('/Users/mmaddela3/Documents/simplification_evaluation/external_repos/sle') 
-
 from sle.scorer import SLEScorer
 
 

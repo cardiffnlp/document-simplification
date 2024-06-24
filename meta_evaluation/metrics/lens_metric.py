@@ -1,12 +1,12 @@
-from lens.lens_score import LENS
+from lens import LENS, download_model
 
 
 class LENS_metric:
 
     name = "LENS"
 
-    def __init__(self, model_path):
-        self.lens_metric = LENS(model_path, rescale=True)
+    def __init__(self):
+        self.lens_metric = LENS(download_model("davidheineman/lens"), rescale=True)
 
     def compute_metric(self, complex, simplified, references):
         new_references = []
@@ -16,7 +16,7 @@ class LENS_metric:
         scores = self.lens_metric.score([c.lower() for c in complex], 
                                         [s.lower() for s in simplified],
                                         new_references,  
-                                    batch_size=16, gpus=1)
+                                    batch_size=16, devices=[0])
         
         assert len(scores) == len(complex) == len(simplified) == len(new_references)
         return scores

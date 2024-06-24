@@ -1,12 +1,8 @@
 import json
 import argparse
 
-import sys
-sys.path.append("/Users/mmaddela3/Documents/simplification_evaluation/external_repos/QuestEval")
+from metrics.sari import SARI
 
-from metrics.questeval import QuestEvalMetric
-
-## Assumption: all metrics are in the range 0 to 100. 
 
 def compute_metrics(dataset, metric):
     for metric in metrics:
@@ -66,7 +62,7 @@ def pairwise_kendall(dataset):
                 mval_diff = abs(mvals["simplification2"] - mvals["simplification1"])
 
                 # We remove comparisions with small difference in metric values.
-                if mvals["simplification2"] > mvals["simplification1"] and mval_diff > 0.1:
+                if mvals["simplification2"] > mvals["simplification1"]:
                     pairwise_mval = 1
                 human = rating["agg_value"]
                 
@@ -81,12 +77,16 @@ def pairwise_kendall(dataset):
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument("--dataset")
+    parser.add_argument("--output")
     args=parser.parse_args()
 
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
 
-        metrics = [QuestEvalMetric()]
+        metrics = [
+                   SARI(),
+        ]
+        
         compute_metrics(dataset, metrics)
 
         correlation_values = pairwise_kendall(dataset)
@@ -98,8 +98,8 @@ if __name__ == '__main__':
                 discordant = counts["discordant"]
                 if (concordant + discordant) > 0:
                     tau = (concordant - discordant) / (concordant + discordant)
-                    print(tau, concordant, discordant)
+                    print("Kendall tau correlation", tau)
+                    print("Consistency", concordant * 100.0 / (concordant + discordant))
 
-    with open("results_v4.json", 'w') as fp:
-        json.dump(dataset, fp)
-
+        with open(args.output, 'w') as fp:
+            json.dump(dataset, fp)
