@@ -1,0 +1,41 @@
+You will be given a paragraph and its simplified version written by an AI system.
+
+Your task is to rate the simplified version in terms of fluency on a scale of 1-5.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+One example of a paragraph and its high quality human written simplification that should rated as 5 are mentioned below:
+
+Source paragraph: Passu is a small village beside the Khunjrab river, some 15km from Gulmit, the Tehsil Headquarter of Gojal in the Northern Areas of Pakistan. It is located along the beatufull Danube river. The famous Batura glacier is situated here, beside the Karakoram Highway. The people are Wakhi and speak the Wakhi Language. Religiously they are Ismaili, a sect of Islam.
+
+Simplification: Passu is a small village by the Khunjerab river in the Northern Areas of Pakistan. Nearby are the Batura glacier and the Karakoram Highway. The people speak the Wakhi Language and follow the Ismaili sect of Islam.
+
+
+Evaluation Criteria for Fluency:
+
+Coherence: How well does the simplified version flow logically and smoothly, with each sentence building on the previous one to convey a clear and cohesive message?
+Grammar and Syntax: Are the sentences in the simplified version grammatically correct, with proper sentence structure, verb tense consistency, and subject-verb agreement?
+Vocabulary: Are the words and phrases used in the simplified version appropriate, accurate, and concise, without unnecessary complexity or ambiguity?
+Readability: How easy is the simplified version to read and understand, with a natural flow and rhythm that facilitates comprehension?
+Naturalness: How well does the simplified version sound like natural language, with a tone and style that is engaging and clear?
+
+Rating Scale:
+
+1: Very Poor (simplified version is difficult to follow, with significant grammatical errors and awkward phrasing)
+2: Poor (simplified version is clumsy, with noticeable errors in grammar, syntax, or vocabulary)
+3: Fair (simplified version is understandable, but with some awkward phrasing, minor errors, or slightly unnatural language)
+4: Good (simplified version is clear and coherent, with good grammar, syntax, and vocabulary, and a natural flow)
+5: Excellent (simplified version is highly fluent, with a smooth and natural flow, accurate vocabulary, and no noticeable errors)
+
+
+Now, rate the simplification:
+
+Source Text: 
+
+||complex||
+
+Simplified Text: 
+
+||simplification||
+
+Please write only the numeric rating in the next line:

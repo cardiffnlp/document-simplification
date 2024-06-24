@@ -1,0 +1,38 @@
+You will be given a paragraph and its simplified version written by an AI system.
+
+Your task is to rate the simplified version in terms of overall quality including fluency, meaning preservation, simplicity and readability on a scale of 1-5.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+One example of a paragraph and its high quality human written simplification that should be rated as 5 are mentioned below:
+
+Source paragraph: Fifty-four trials enrolling 6545 patients were included. Compared with no treatment, interferon 3 MU thrice weekly for 12 months increased the probability of a virologic SR (Peto odds ratio (OR) 4.60; 95% confidence interval (CI) 1.53 to 13.85). At this dosage and duration of therapy, the rate of virologic SR was 17% (95% CI 10 to 28%) in interferon-treated patients versus 3% (95% CI 1 to 10%) in controls. A dose of 6 MU was more effective than 3 MU thrice weekly (OR for 12 months treatment, 2.21; 95% CI 1.10 to 4.45), as were durations of 12 months or greater versus six months (OR 1.87; 95% CI 1.30 to 2.67). Liver biochemistry responses were alike. Adverse events were more common with higher doses and prolonged durations of treatment. Compared with no therapy, interferon increased the probability of histologic improvement (OR 9.22; 95% CI 5.69 to 14.94). The response to interferon in cirrhotic patients (virologic SR, 17%; 95% CI 11 to 26%) was similar to that in non-cirrhotic patients. However, interferon was no more effective than control in patients with normal aminotransferases. Interferon is effective in achieving viral clearance and improving liver biochemistry and histology in interferon naive patients with chronic hepatitis C. Higher doses and prolonged durations are more effective, but associated with more frequent adverse events. Interferon is associated with similar benefits in patients with cirrhosis, but the efficacy in patients with normal aminotransferases is unproven.
+
+Simplification: The goal of this systematic review was to examine the effects of interferon treatment for interferon naive (previously untreated) patients with chronic hepatitis C. This review confirmed the efficacy of interferon on surrogate outcomes as well as a favourable effect of higher treatment doses and prolonged durations. However, these effects were associated with more adverse events. Compared with non-cirrhotic patients, cirrhotic patients respond similarly, but the efficacy of interferon in patients with normal liver biochemistry is not substantiated by the data. Although interferon monotherapy is no longer considered the standard therapy for chronic hepatitis C, this review defines the optimal dose and duration of interferon monotherapy, which may be useful for patients who cannot tolerate combination therapy including interferon and ribavirin, the most effective therapy currently available.
+
+Evaluation Criteria for Overall quality:
+
+Fluency: How naturally and smoothly the sentence flows.
+Meaning preservation: How well the simplified version conveys the same meaning as the original paragraph.
+Simplicity: How well the language is simplified, making it easier to understand.
+Readability: How easy it is to read and comprehend the simplified paragraph.
+
+Rating Scale: (1-5)
+
+5: Excellent simplification that is fluent, clear, and easy to understand. The language is natural and idiomatic, and the simplified version conveys the same meaning as the original paragraph with no loss of important information or context.
+4: Good simplification that is generally fluent and clear. The language is mostly natural, and the simplified version conveys most of the meaning of the original paragraph with minor losses of information or context.
+3: Fair simplification that is somewhat fluent and clear. The language may sound slightly awkward or stilted, and the simplified version conveys some of the meaning of the original paragraph with significant losses of information or context.
+2: Poor simplification that is not very fluent or clear. The language is unnatural, and the simplified version conveys little of the meaning of the original paragraph with major losses of information or context.
+1: Very poor simplification that is nearly incomprehensible due to numerous errors and unnatural language. The simplified version bears little resemblance to the original paragraph and fails to convey its meaning.
+
+Now, rate the simplification:
+
+Source Text: 
+
+||complex||
+
+Simplified Text: 
+
+||simplification||
+
+Please write only the numeric rating in the next line:

@@ -1,0 +1,39 @@
+You will be given a paragraph and its simplified version written by an AI system.
+
+Your task is to rate the simplified version in terms of overall quality including fluency, meaning preservation, simplicity and readability on a scale of 1-5.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+One example of a paragraph and its high quality human written simplification that should be rated as 5 are mentioned below:
+
+Source paragraph: Brazil’s latest funk sensation, Anitta, has won millions of fans by taking the favela sound into the mainstream, but she is at the centre of a debate about skin colour. Anti-discrimination campaigners and social commentators say the music industry’s fastest rising star has had to sacrifice her blackness to make it into the predominantly white middle- class market. The controversy was prompted by the publication of then-and-now photographs that show a dramatic lightening of Anitta’s skin tone since she signed a deal with Warner. 
+
+Simplification: Anitta, a music star from Brazil, has millions of fans, but she is at the centre of a debate about skin colour. 
+Some people are saying that Anitta had to give up her black skin to be a success in the mostly white middle-class market. The debate was started by photographs that show that Anitta’s skin has got much lighter since she signed a music deal with Warner.
+
+Evaluation Criteria for Overall quality:
+
+Fluency: How naturally and smoothly the sentence flows.
+Meaning preservation: How well the simplified version conveys the same meaning as the original paragraph.
+Simplicity: How well the language is simplified, making it easier to understand.
+Readability: How easy it is to read and comprehend the simplified paragraph.
+
+Rating Scale: (1-5)
+
+5: Excellent simplification that is fluent, clear, and easy to understand. The language is natural and idiomatic, and the simplified version conveys the same meaning as the original paragraph with no loss of important information or context.
+4: Good simplification that is generally fluent and clear. The language is mostly natural, and the simplified version conveys most of the meaning of the original paragraph with minor losses of information or context.
+3: Fair simplification that is somewhat fluent and clear. The language may sound slightly awkward or stilted, and the simplified version conveys some of the meaning of the original paragraph with significant losses of information or context.
+2: Poor simplification that is not very fluent or clear. The language is unnatural, and the simplified version conveys little of the meaning of the original paragraph with major losses of information or context.
+1: Very poor simplification that is nearly incomprehensible due to numerous errors and unnatural language. The simplified version bears little resemblance to the original paragraph and fails to convey its meaning.
+
+Now, rate the simplification:
+
+Source Text: 
+
+||complex||
+
+Simplified Text: 
+
+||simplification||
+
+Please write only the numeric rating in the next line:

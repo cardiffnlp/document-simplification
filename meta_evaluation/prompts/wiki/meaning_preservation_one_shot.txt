@@ -1,0 +1,40 @@
+You will be given a paragraph and its simplified version written by an AI system.
+
+Your task is to rate the simplified version in terms of meaning preservation on a scale of 1-5.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+One example of a paragraph and its high quality human written simplification that should rated as 5 are mentioned below:
+
+Source paragraph: Passu is a small village beside the Khunjrab river, some 15km from Gulmit, the Tehsil Headquarter of Gojal in the Northern Areas of Pakistan. It is located along the beatufull Danube river. The famous Batura glacier is situated here, beside the Karakoram Highway. The people are Wakhi and speak the Wakhi Language. Religiously they are Ismaili, a sect of Islam.
+
+Simplification: Passu is a small village by the Khunjerab river in the Northern Areas of Pakistan. Nearby are the Batura glacier and the Karakoram Highway. The people speak the Wakhi Language and follow the Ismaili sect of Islam.
+
+Evaluation Criteria for Meaning Preservation:
+
+Accuracy: How well does the simplified version maintain the original meaning and content of the paragraph?
+Completeness: Does the simplified version cover all the main points and essential information from the original paragraph?
+Fidelity: How faithful is the simplified version to the tone, style, and intent of the original paragraph?
+Clarity: Is the simplified version clear and easy to understand, without introducing ambiguity or confusion?
+Omissions: Are any important details or context omitted from the simplified version that alter its meaning or impact?
+
+Rating Scale:
+
+1: Very Poor (significant meaning lost or distorted)
+2: Poor (some meaning preserved, but with notable omissions or distortions)
+3: Fair (most meaning preserved, with minor omissions or distortions)
+4: Good (meaning well-preserved, with high fidelity and clarity)
+5: Excellent (meaning perfectly preserved, with no omissions or distortions)
+
+
+Now, rate the simplification:
+
+Source Text: 
+
+||complex||
+
+Simplified Text: 
+
+||simplification||
+
+Please write only the numeric rating in the next line:

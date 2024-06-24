@@ -1,0 +1,15 @@
+You will be given a paragraph and its simplified version written by an AI system.
+
+Your task is to rate the simplified version in terms of overall quality including fluency, meaning preservation, simplicity and readability on a scale of 1-5.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+Source Text: 
+
+||complex||
+
+Simplified Text: 
+
+||simplification||
+
+Please write only the numeric rating in the next line:

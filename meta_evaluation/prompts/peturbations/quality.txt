@@ -1,0 +1,32 @@
+You will be given a paragraph and its simplified version written by an AI system.
+
+Your task is to rate the simplified version in terms of overall quality including fluency, meaning preservation, simplicity and readability on a scale of 1-5.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+Evaluation Criteria for Overall quality:
+
+Fluency: How naturally and smoothly the sentence flows.
+Meaning preservation: How well the simplified version conveys the same meaning as the original paragraph.
+Simplicity: How well the language is simplified, making it easier to understand.
+Readability: How easy it is to read and comprehend the simplified paragraph.
+
+Rating Scale: (1-5)
+
+5: Excellent simplification that is fluent, clear, and easy to understand. The language is natural and idiomatic, and the simplified version conveys the same meaning as the original paragraph with no loss of important information or context.
+4: Good simplification that is generally fluent and clear. The language is mostly natural, and the simplified version conveys most of the meaning of the original paragraph with minor losses of information or context.
+3: Fair simplification that is somewhat fluent and clear. The language may sound slightly awkward or stilted, and the simplified version conveys some of the meaning of the original paragraph with significant losses of information or context.
+2: Poor simplification that is not very fluent or clear. The language is unnatural, and the simplified version conveys little of the meaning of the original paragraph with major losses of information or context.
+1: Very poor simplification that is nearly incomprehensible due to numerous errors and unnatural language. The simplified version bears little resemblance to the original paragraph and fails to convey its meaning.
+
+Now, rate the simplification:
+
+Source Text: 
+
+||complex||
+
+Simplified Text: 
+
+||simplification||
+
+Please write only the numeric rating in the next line:
