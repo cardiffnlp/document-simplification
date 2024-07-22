@@ -1,24 +1,21 @@
 import json
 import argparse
 
-# import sys
-# sys.path.append("/home/ubuntu/simplification/external/referee/code")
-# sys.path.append("/home/ubuntu/simplification/external/sle-main")
+import sys
+sys.path.append("/home/ubuntu/simplification/external/referee/code")
+sys.path.append("/home/ubuntu/simplification/external/sle-main")
 
-# from metrics.sari import SARI
-# from metrics.bleu import BLEU
-# from metrics.gleu import GLEU
-# from metrics.D_SARI import DSARI
-# from metrics.bscore import BERTScore
-# from metrics.lens_metric import LENS_metric
-# from metrics.sle_metric import SLE_metric
-# from metrics.referee import REFEREE
-# from metrics.agg_metric_graph_v2 import AggMeticGraph
-# from metrics.agg_metric_graph_refless import AggMeticGraphRefless
-# from metrics.agg_metric_graph_no_complex import AggMeticGraphNoComplex
+from metrics.sari import SARI
+from metrics.bleu import BLEU
+from metrics.D_SARI import DSARI
+from metrics.bscore import BERTScore
+from metrics.lens_metric import LENS_metric
+from metrics.sle_metric import SLE_metric
+from metrics.referee import REFEREE
+from metrics.agg_metric_graph_v2 import AggMeticGraph
 
-from transformers import LlamaForCausalLM, AutoTokenizer
-from metrics.llama_metric import LLAMA_metric
+# from transformers import LlamaForCausalLM, AutoTokenizer
+# from metrics.llama_metric import LLAMA_metric
 
 
 def compute_metrics(dataset, metric):
@@ -98,33 +95,30 @@ if __name__ == '__main__':
     parser.add_argument("--output")
     args=parser.parse_args()
 
-    model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = LlamaForCausalLM.from_pretrained(model_id)
+    # model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+    # tokenizer = AutoTokenizer.from_pretrained(model_id)
+    # model = LlamaForCausalLM.from_pretrained(model_id)
 
 
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
 
         metrics = [
-                   # SARI(),
-                   # AggMeticGraph(args.bert, SARI()),
-                   # BLEU(), 
-                   # AggMeticGraphNoComplex(args.bert, BLEU()),
-                   # GLEU(),
-                   # AggMeticGraphNoComplex(None, GLEU()),
-                   # DSARI(),
-                   # BERTScore(),
-                   # AggMeticGraphNoComplex(None, BERTScore()),
-                   # SLE_metric(True),
-                   # AggMeticGraphRefless(args.bert, SLE_metric(True)),
-                   # LENS_metric(),
-                   # AggMeticGraph(args.bert, LENS_metric()),
-                   # REFEREE(),
-                   # AggMeticGraphRefless(args.bert, REFEREE())
+                   SARI(),
+                   AggMeticGraph(args.bert, SARI()),
+                   BLEU(),
+                   DSARI(),
+                   BERTScore(),
+                   AggMeticGraph(None, BERTScore()),
+                   SLE_metric(True),
+                   AggMeticGraph(None, SLE_metric(True), refless=True),
+                   LENS_metric(),
+                   AggMeticGraph(args.bert, LENS_metric()),
+                   REFEREE(),
+                   AggMeticGraph(None, REFEREE(), refless=True)
 
-                  LLAMA_metric(model, tokenizer, "prompts/cochrane/one_shot_quality.txt"),
-                  LLAMA_metric(model, tokenizer, "prompts/cochrane/quality.txt")
+                  # LLAMA_metric(model, tokenizer, "prompts/cochrane/one_shot_quality.txt"),
+                  # LLAMA_metric(model, tokenizer, "prompts/cochrane/quality.txt")
         ]
         
         compute_metrics(dataset, metrics)

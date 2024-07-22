@@ -2,28 +2,23 @@ import json
 import string
 import argparse
 
+from scipy.stats import pearsonr
+
 import sys
 sys.path.append("/home/ubuntu/simplification/external/referee/code")
 sys.path.append("/home/ubuntu/simplification/external/sle-main")
-sys.path.append("/home/ubuntu/simplification/external/swipe")
 
 from metrics.sari import SARI
 from metrics.bleu import BLEU
-from metrics.gleu import GLEU
 from metrics.D_SARI import DSARI
-from metrics.bscore import BERTScore
-from metrics.lens_metric import LENS_metric
-from metrics.sle_metric import SLE_metric
 from metrics.referee import REFEREE
+from metrics.bscore import BERTScore
+from metrics.sle_metric import SLE_metric
+from metrics.lens_metric import LENS_metric
 from metrics.agg_metric_graph_v2 import AggMeticGraph
-from metrics.agg_metric_graph_refless import AggMeticGraphRefless
-from metrics.agg_metric_graph_no_complex import AggMeticGraphNoComplex
-# from metrics.agg_metric_edit_no_complex import AggMeticEditNoComplex
-# from metrics.agg_metric_edit_refless import AggMeticEditRefless
-# from metrics.agg_metric_edit import AggMeticEdit
-# from metrics.smart_eval import SmartScorer
 
-from scipy.stats import pearsonr
+from transformers import LlamaForCausalLM, AutoTokenizer
+from metrics.llama_metric import LLAMA_metric
 
 
 def compute_metrics(dataset, metric):
@@ -56,7 +51,6 @@ def compute_metrics(dataset, metric):
             instance["metrics"][metric.name]= mvals_dict[key]
 
 
-        
 def print_pearson(dataset, metrics):
     dimensions = [rating["name"] for rating in dataset[0]["ratings"]]
     for dimension in dimensions:
@@ -76,31 +70,33 @@ def print_pearson(dataset, metrics):
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
-    parser.add_argument("--lens")
     parser.add_argument("--bert")
     parser.add_argument("--dataset")
     parser.add_argument("--output")
     args=parser.parse_args()
 
+    # model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+    # tokenizer = AutoTokenizer.from_pretrained(model_id)
+    # model = LlamaForCausalLM.from_pretrained(model_id)
+
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
-
         metrics = [
                    SARI(),
                    AggMeticGraph(args.bert, SARI()),
                    BLEU(), 
-                   AggMeticGraphNoComplex(args.bert, BLEU()),
-                   GLEU(),
-                   AggMeticGraphNoComplex(None, GLEU()),
                    DSARI(),
                    BERTScore(),
-                   AggMeticGraphNoComplex(None, BERTScore()),
+                   AggMeticGraph(None, BERTScore()),
                    SLE_metric(True),
-                   AggMeticGraphRefless(args.bert, SLE_metric(True)),
-                   LENS_metric(args.lens),
-                   AggMeticGraph(args.bert, LENS_metric(args.lens)),
+                   AggMeticGraph(None, SLE_metric(True), refless=True),
+                   LENS_metric(),
+                   AggMeticGraph(None, LENS_metric()),
                    REFEREE(),
-                   AggMeticGraphRefless(None, REFEREE()),
+                   AggMeticGraph(None, REFEREE(), refless=True),
+
+                  # LLAMA_metric(model, tokenizer, "prompts/qa/meaning_preservation_one_shot.txt"),
+                  # LLAMA_metric(model, tokenizer, "prompts/meaning_preservation.txt")
         ]
         
         compute_metrics(dataset, metrics)

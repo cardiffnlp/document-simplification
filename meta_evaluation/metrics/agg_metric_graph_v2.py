@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 from nltk import sent_tokenize
-from lens.lens_score import LENS
 from sklearn.utils.extmath import softmax
 from transformers import BertForSequenceClassification, BertTokenizer
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
@@ -123,13 +122,13 @@ def merge_node_groups(node_groups):
                 node = single_nodes_of_type.pop(0)
                 new_node_groups.append(set([start + str(i) for i in range(node[0], node[1])]))
 
-    print("Old groups")
-    for group in node_groups:
-        print(group)
+    # print("Old groups")
+    # for group in node_groups:
+    #     print(group)
 
-    print("New groups")
-    for group in new_node_groups:
-        print(group)
+    # print("New groups")
+    # for group in new_node_groups:
+    #     print(group)
 
     return new_node_groups
           
@@ -149,7 +148,7 @@ def bfs(adj_list):
                 for child in adj_list.get(node, []):
                     if child not in visited:
                         queue.append(child)
-            print(key, node_group)
+            # print(key, node_group)
             node_groups.append(node_group)
     return node_groups
     
@@ -158,10 +157,8 @@ class AggMeticGraph:
 
     CACHE = {}
 
-    def __init__(self, bert_path, sent_metric, weighted=False):
+    def __init__(self, bert_path, sent_metric, refless=False):
         self.name = "Aggregation Metric Graph -" + sent_metric.name
-        if weighted:
-            self.name += " Weighted"
         if bert_path is not None:
             self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
                                             do_lower_case=True)
@@ -171,7 +168,7 @@ class AggMeticGraph:
             self.alignment_model.eval()
         self.sent_model = sent_metric
         self.cache = AggMeticGraph.CACHE
-        self.weighted = weighted
+        self.refless = refless
         super().__init__()
 
     def compute_metric_single(self, complex, simplified, references):
@@ -199,8 +196,9 @@ class AggMeticGraph:
                 )
 
                 adj_list = {}
-                # consturct_graph(adj_list, rc_matrix, 'r', 'c')
-                consturct_graph(adj_list, cr_matrix, 'c', 'r')
+                if not self.refless:
+                    # consturct_graph(adj_list, rc_matrix, 'r', 'c')
+                    consturct_graph(adj_list, cr_matrix, 'c', 'r')
                 # consturct_graph(adj_list, sc_matrix, 's', 'c')
                 consturct_graph(adj_list, cs_matrix, 'c', 's')
 
@@ -231,17 +229,10 @@ class AggMeticGraph:
 
             all_comps, all_cands, all_refs = self.cache[key]
             scores = self.sent_model.compute_metric(all_comps, all_cands, all_refs)
-
-            if self.weighted:
-                lens = [len(a) + len(b) + len(c[0]) for a, b, c, in 
-                        zip(all_comps, all_cands, all_refs)]
-                lens = torch.Tensor(lens) / sum(lens)
-                final_score = sum(lens * torch.Tensor(scores)).item()
-            else:
-                final_score = np.mean(scores)
+            final_score = np.mean(scores)
             ref_scores.append(final_score)
 
-        print(ref_scores)
+        # print(ref_scores)
         return max(ref_scores)
     
     def compute_metric(self, complex, simplified, references) :
