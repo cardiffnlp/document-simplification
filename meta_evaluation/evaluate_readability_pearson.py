@@ -4,6 +4,13 @@ import argparse
 from scipy.stats import pearsonr
 
 from metrics.sari import SARI
+from metrics.bleu import BLEU
+from metrics.ari import ARI
+from metrics.dalechall import DalleChall
+from metrics.fkgl import FKGL
+from metrics.fre import FRE
+from metrics.trank import TRank
+
 
 def compute_metrics(dataset, metric):
     for metric in metrics:
@@ -62,7 +69,13 @@ if __name__ == '__main__':
         dataset = [json.loads(line.strip()) for line in fp]
 
         metrics = [
-                   SARI()
+                #    SARI(),
+                #    BLEU(),
+                #    ARI(),
+                #    DalleChall(),
+                #    FKGL(),
+                #    FRE(),
+                   TRank(),
         ]
         
         compute_metrics(dataset, metrics)

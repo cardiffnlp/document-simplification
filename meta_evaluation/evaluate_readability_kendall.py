@@ -2,6 +2,13 @@ import json
 import argparse
 
 from metrics.sari import SARI
+from metrics.bleu import BLEU
+
+from metrics.ari import ARI
+from metrics.dalechall import DalleChall
+from metrics.fkgl import FKGL
+from metrics.fre import FRE
+from metrics.trank import TRank
 
 
 def compute_metrics(dataset, metric):
@@ -85,6 +92,12 @@ if __name__ == '__main__':
 
         metrics = [
                    SARI(),
+                   BLEU(),
+                   ARI(),
+                   DalleChall(),
+                   FKGL(),
+                   FRE(),
+                   TRank(),
         ]
         
         compute_metrics(dataset, metrics)
