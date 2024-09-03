@@ -10,8 +10,11 @@ class LENS_SALSA_metric:
 
     def compute_metric(self, complex, simplified, references):
 
-        scores, _ = self.lens_metric_salsa.score([c.lower() for c in complex], [s.lower() for s in simplified], 
-                                    batch_size=16, devices=[0])
+        all_scores = []
+        for comp, simp in zip(complex, simplified):
+        
+            scores, _ = self.lens_metric_salsa.score([comp.lower()], [simp.lower()], 
+                                        batch_size=1, devices=[0])
+            all_scores.append(scores[0])
 
-        print(scores)
-        return scores
+        return all_scores
