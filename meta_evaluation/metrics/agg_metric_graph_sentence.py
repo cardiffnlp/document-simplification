@@ -79,86 +79,24 @@ def get_similarity_score_from_sent_pair(sentA_list, sentB_list, model,
     return probabilities
 
 
-def consturct_graph(adj_list, matrix, label_row, label_col, threshold):
-    m,n = matrix.shape
-    for i in range(m):
-        x = label_row + str(i)
-        for j in range(n):
-            y = label_col + str(j)
-            adj_list.setdefault(x, [])
-            adj_list.setdefault(y, [])
-            if matrix[i][j] > threshold:
-                adj_list[x].append(y)
-                adj_list[y].append(x)
+def consturct_graph(matrix, row_sents, col_sents):
+    pairs = []
+    # matrix = matrix.transpose()
+    m, n = matrix.shape
+    matrix_inds = np.argmax(matrix, axis=0)
+    # print(matrix.shape)
+    # print(matrix_inds)
+    for i in range(n):
+        x = i
+        y = matrix_inds[i]
+        pairs.append((row_sents[x], col_sents[y]))
+    return pairs
 
 
-def merge_node_groups(node_groups):
-    single_nodes = []
-    new_node_groups = []
-    for group in node_groups:
-        if len(group) > 1:
-            new_node_groups.append(group)
-        else:
-            single_nodes.append(group)
-
-    for start in ['c', 's', 'r']:
-        single_nodes_of_type = []
-        for node in single_nodes:
-            node = list(node)[0]
-            if node.startswith(start):
-                num = int(node[1:])
-                single_nodes_of_type.append((num, num + 1))
-        single_nodes_of_type = sorted(single_nodes_of_type)
-
-        while len(single_nodes_of_type) > 1:
-            if single_nodes_of_type[0][1] == single_nodes_of_type[1][0]:
-                node = single_nodes_of_type.pop(0)
-                single_nodes_of_type[0] = (node[0], single_nodes_of_type[0][1])
-            else:
-                node = single_nodes_of_type.pop(0)
-                new_node_groups.append(set([start + str(i) for i in range(node[0], node[1])]))
-
-        if  len(single_nodes_of_type) == 1:
-                node = single_nodes_of_type.pop(0)
-                new_node_groups.append(set([start + str(i) for i in range(node[0], node[1])]))
-
-    # print("Old groups")
-    # for group in node_groups:
-    #     print(group)
-
-    # print("New groups")
-    # for group in new_node_groups:
-    #     print(group)
-
-    return new_node_groups
-          
-def bfs(adj_list):
-    node_groups = []
-    queue = []
-    visited = set()
-
-    for key in adj_list:
-        if key not in visited and (key.startswith('s') or key.startswith('c')):
-            queue.append(key)
-            node_group = set()
-            while len(queue) > 0:
-                node = queue.pop()
-                visited.add(node)
-                node_group.add(node)
-                for child in adj_list.get(node, []):
-                    if child not in visited:
-                        queue.append(child)
-            # print(key, node_group)
-            node_groups.append(node_group)
-    return node_groups
-    
-
-class AggMeticGraph:
-
+class AggMeticGraphSentence:
     CACHE = {}
-
-    def __init__(self, bert_path, sent_metric, refless=False, threshold=0.5):
-        self.name = "Aggregation Metric Graph -" + sent_metric.name
+    def __init__(self, bert_path, sent_metric, refless=False):
+        self.name = "Aggregation Metric Graph Sentence -" + sent_metric.name
         if bert_path is not None:
             self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
                                             do_lower_case=True)
@@ -167,10 +105,8 @@ class AggMeticGraph:
                                             output_hidden_states=True).to("cuda:0")
             self.alignment_model.eval()
         self.sent_model = sent_metric
-        self.cache = AggMeticGraph.CACHE
+        self.cache = AggMeticGraphSentence.CACHE
         self.refless = refless
-        self.threshold = threshold
-        
         super().__init__()
 
     def compute_metric_single(self, complex, simplified, references):
@@ -184,44 +120,22 @@ class AggMeticGraph:
         for reference in references:
             key = (complex, simplified, reference) 
             if key not in self.cache:
-
-                # print("**"* 20)
-                # print(complex)
-                # print(simplified)
-                # print(reference)
-                # print("---" * 20)
-
+                
                 rsents = sent_tokenize(reference)
-                # print(len(csents), len(ssents), len(rsents))
                 rc_matrix, cr_matrix, sc_matrix, cs_matrix = get_score_matrix(
                     csents, rsents, ssents, self.alignment_model, self.tokenizer, 128
                 )
 
-                adj_list = {}
-                if not self.refless:
-                    # consturct_graph(adj_list, rc_matrix, 'r', 'c')
-                    consturct_graph(adj_list, cr_matrix, 'c', 'r', self.threshold)
-                # consturct_graph(adj_list, sc_matrix, 's', 'c')
-                consturct_graph(adj_list, cs_matrix, 'c', 's', self.threshold)
+                cr_pairs = consturct_graph(rc_matrix, csents, rsents)
+                cs_pairs = consturct_graph(sc_matrix, csents, ssents)
 
                 all_comps, all_cands, all_refs = [], [], []
-                node_groups = bfs(adj_list)
-                node_groups = merge_node_groups(node_groups)
-                for group in node_groups:
-                    if any(g.startswith('s') or g.startswith('c') for g in group):
-                        cs = sorted([int(node[1:]) for node in group if node.startswith('c')])
-                        ss = sorted([int(node[1:]) for node in group if node.startswith('s')])
-                        rs = sorted([int(node[1:]) for node in group if node.startswith('r')])
-                        cs = " ".join([csents[i] for i in cs])
-                        ss = " ".join([ssents[i] for i in ss])
-                        rs = " ".join([rsents[i] for i in rs])
-                        # print(cs)
-                        # print(ss)
-                        # print(rs)
-                        all_comps.append(cs)
-                        all_cands.append(ss)
-                        all_refs.append([rs])
-
+                for cr_pair, cs_pair in zip(cr_pairs, cs_pairs):
+                    assert cr_pair[0] == cs_pair[0]
+                    all_comps.append(cr_pair[0])
+                    all_cands.append(cs_pair[1])
+                    all_refs.append([cr_pair[1]])
+                    
                 if len(all_cands) == 0:
                     all_comps = [complex]
                     all_cands = [simplified]
@@ -234,7 +148,6 @@ class AggMeticGraph:
             final_score = np.mean(scores)
             ref_scores.append(final_score)
 
-        # print(ref_scores)
         return max(ref_scores)
     
     def compute_metric(self, complex, simplified, references) :

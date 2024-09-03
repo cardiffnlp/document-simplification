@@ -1,4 +1,5 @@
 import torch
+import bert_score
 import numpy as np
 from nltk import sent_tokenize
 from sklearn.utils.extmath import softmax
@@ -6,77 +7,46 @@ from transformers import BertForSequenceClassification, BertTokenizer
 from torch.utils.data import TensorDataset, SequentialSampler, DataLoader
 from transformers.data.processors import InputExample, glue_convert_examples_to_features
 
-import logging
-logging.disable(logging.WARNING)
+from sentence_transformers import SentenceTransformer
+from sentence_transformers import util
 
 
-def get_score_matrix(csents, rsents, ssents, model, tokenizer, max_length):
-    all_sents_tgt = [rsents, csents, ssents, csents]
-    all_sents_cand = [csents, rsents, csents, ssents]
+def get_score_matrix(model, csents, rsents, ssents):
 
-    tgt_can_pairs = []
-    for tgt_sentences, can_sentences in zip(all_sents_tgt, all_sents_cand):
-        for t in tgt_sentences:
-            for c in can_sentences:
-                tgt_can_pairs.append((t, c))
-    tgts, cans = list(zip(*tgt_can_pairs))
-    tgts = list(tgts)
-    cans = list(cans)
-    pairwise_scores = get_similarity_score_from_sent_pair(tgts, cans, 
-                                            model, tokenizer, max_length)
-    
-    nc, ns, nr = len(csents), len(ssents), len(rsents)
-    rc_matrix = np.array(pairwise_scores[:nc * nr]).reshape((nr, nc))
-    start_ind = nc * nr
-    end_ind = start_ind + nc * nr
-    cr_matrix = np.array(pairwise_scores[start_ind: end_ind]).reshape((nc, nr))
-    start_ind = end_ind
-    end_ind = start_ind + ns * nc
-    sc_matrix = np.array(pairwise_scores[start_ind: end_ind]).reshape((ns, nc))
-    cs_matrix = np.array(pairwise_scores[-1 * nc * ns:]).reshape((nc, ns))
+    cembeddings = model.encode(csents)
+    rembeddings = model.encode(rsents)
+    sembeddings = model.encode(ssents)
+
+    cr_matrix = util.pytorch_cos_sim(cembeddings, rembeddings)
+    cs_matrix = util.pytorch_cos_sim(cembeddings, sembeddings)
+
+    rc_matrix = util.pytorch_cos_sim(rembeddings, cembeddings)
+    sc_matrix = util.pytorch_cos_sim(sembeddings, cembeddings)
+
+    # all_sents_tgt = [rsents, csents, ssents, csents]
+    # all_sents_cand = [csents, rsents, csents, ssents]
+
+    # tgt_can_pairs = []
+    # for tgt_sentences, can_sentences in zip(all_sents_tgt, all_sents_cand):
+    #     for t in tgt_sentences:
+    #         for c in can_sentences:
+    #             tgt_can_pairs.append((t, c))
+    # tgts, cans = list(zip(*tgt_can_pairs))
+    # tgts = list(tgts)
+    # cans = list(cans)
+    # (_, _, pairwise_scores), _ = bert_score.score(cans, tgts, lang="en", 
+    #                                     return_hash=True, verbose=True, idf=False,
+    #                                     model_type="roberta-large", batch_size=64)
+    # nc, ns, nr = len(csents), len(ssents), len(rsents)
+    # rc_matrix = np.array(pairwise_scores[:nc * nr]).reshape((nr, nc))
+    # start_ind = nc * nr
+    # end_ind = start_ind + nc * nr
+    # cr_matrix = np.array(pairwise_scores[start_ind: end_ind]).reshape((nc, nr))
+    # start_ind = end_ind
+    # end_ind = start_ind + ns * nc
+    # sc_matrix = np.array(pairwise_scores[start_ind: end_ind]).reshape((ns, nc))
+    # cs_matrix = np.array(pairwise_scores[-1 * nc * ns:]).reshape((nc, ns))
     return rc_matrix, cr_matrix, sc_matrix, cs_matrix
-
-
-def get_similarity_score_from_sent_pair(sentA_list, sentB_list, model, 
-                                        tokenizer, max_length = 128):
-
-    model.eval()
-    fake_example = []
-
-    for i in range(len(sentA_list)):
-        fake_example.append(InputExample(guid=i, text_a=sentA_list[i], text_b=sentB_list[i], label='good'))
-
-    fake_example_features = glue_convert_examples_to_features(fake_example, tokenizer, max_length, label_list = ["good", 'bad'], output_mode = 'classification')
-
-    all_input_ids = torch.tensor([f.input_ids for f in fake_example_features], dtype=torch.long)
-    all_attention_mask = torch.tensor([f.attention_mask for f in fake_example_features], dtype=torch.long)
-    all_token_type_ids = torch.tensor([f.token_type_ids for f in fake_example_features], dtype=torch.long)
-    all_label = torch.tensor([f.label for f in fake_example_features], dtype=torch.long)
-
-    dataset = TensorDataset(all_input_ids, all_attention_mask, all_token_type_ids, all_label)
-    
-    output_tensor = []
-    eval_sampler = SequentialSampler(dataset)
-    eval_dataloader = DataLoader(dataset, sampler=eval_sampler, batch_size=64)
-    for batch in eval_dataloader:
-        my_device = torch.device('cuda:0')
-        batch = tuple(t.to(my_device) for t in batch)
-        with torch.no_grad():
-            inputs = {'input_ids': batch[0],
-                      'attention_mask': batch[1],
-                      'token_type_ids': batch[2],
-                      'labels': batch[3]}
-            outputs = model(input_ids=inputs["input_ids"], \
-                            attention_mask=inputs["attention_mask"], \
-                            token_type_ids=inputs["token_type_ids"], \
-                            labels=None, \
-                            )
-            output_tensor.append(outputs['logits'].cpu().data)
-
-    output_tensor = torch.cat(output_tensor)
-    probabilities = softmax(output_tensor)
-    probabilities = [i[0] for i in probabilities]
-    return probabilities
 
 
 def consturct_graph(adj_list, matrix, label_row, label_col, threshold):
@@ -153,24 +123,17 @@ def bfs(adj_list):
     return node_groups
     
 
-class AggMeticGraph:
+class AggMeticGraphSimModels:
 
     CACHE = {}
+    def __init__(self, bert_path, sent_metric, refless=False):
+        self.name = "Aggregation Metric Graph Sim Model SBERT -" + sent_metric.name
 
-    def __init__(self, bert_path, sent_metric, refless=False, threshold=0.5):
-        self.name = "Aggregation Metric Graph -" + sent_metric.name
-        if bert_path is not None:
-            self.tokenizer = BertTokenizer.from_pretrained(bert_path, 
-                                            do_lower_case=True)
-            self.alignment_model = BertForSequenceClassification.from_pretrained(
-                                            bert_path, 
-                                            output_hidden_states=True).to("cuda:0")
-            self.alignment_model.eval()
+        self.alignment_model = SentenceTransformer("all-mpnet-base-v2")
         self.sent_model = sent_metric
-        self.cache = AggMeticGraph.CACHE
+        self.cache = AggMeticGraphSimModels.CACHE
         self.refless = refless
-        self.threshold = threshold
-        
+        self.threshold = 0.5
         super().__init__()
 
     def compute_metric_single(self, complex, simplified, references):
@@ -194,7 +157,7 @@ class AggMeticGraph:
                 rsents = sent_tokenize(reference)
                 # print(len(csents), len(ssents), len(rsents))
                 rc_matrix, cr_matrix, sc_matrix, cs_matrix = get_score_matrix(
-                    csents, rsents, ssents, self.alignment_model, self.tokenizer, 128
+                    self.alignment_model, csents, rsents, ssents,
                 )
 
                 adj_list = {}
@@ -245,4 +208,3 @@ class AggMeticGraph:
             scores.append(self.compute_metric_single(comp, simp, refs))
             index += 1
         return scores
-    
