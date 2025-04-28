@@ -27,22 +27,22 @@ Please download the BERT similarity model from [here](https://drive.google.com/f
 ### Kendall Correlation on Cochrane dataset
 
 ```
-python3 evaluate_kendall.py --dataset eval_datasets/cochrance_lj.jsonl --output output.jsonl --bert ../BERT_wiki/
+python3 evaluate_kendall.py --dataset eval_datasets/cochrance_lj.jsonl --output output.jsonl --bert BERT_wiki/
 ```
 
 ### Pearson Correlation on OneStopQA dataset
 
 ```
-python3 evaluate_pearson.py --dataset eval_datasets/qa.jsonl --output output.jsonl --bert ../BERT_wiki/
+python3 evaluate_pearson.py --dataset eval_datasets/qa.jsonl --output output.jsonl --bert BERT_wiki/
 ```
 
-### Correlation on Wikipedia dataset
+### Pearson Correlation on Wikipedia dataset
 
 ```
-python3 evaluate_pearson.py --dataset eval_datasets/dwiki_final.jsonl --output output.jsonl --bert ../BERT_wiki/
+python3 evaluate_pearson.py --dataset eval_datasets/dwiki_final.jsonl --output output.jsonl --bert BERT_wiki/
 ```
 
-### Correlation on different perturbation datasets
+### Kendall Correlation on different perturbation datasets
 
 ```
 python3 evaluate_kendall.py --dataset eval_datasets/peturb_deletion.jsonl --output output.jsonl --bert ../BERT_wiki/
