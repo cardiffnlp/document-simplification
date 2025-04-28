@@ -4,21 +4,15 @@ import argparse
 
 from scipy.stats import pearsonr
 
-import sys
-sys.path.append("/home/ubuntu/simplification/external/referee/code")
-sys.path.append("/home/ubuntu/simplification/external/sle-main")
-
 from metrics.sari import SARI
 from metrics.bleu import BLEU
 from metrics.D_SARI import DSARI
-from metrics.referee import REFEREE
 from metrics.bscore import BERTScore
-from metrics.sle_metric import SLE_metric
 from metrics.lens_metric import LENS_metric
-from metrics.agg_metric_graph_v2 import AggMeticGraph
+from metrics.agg_metric_graph import AggMetricGraph
 
-from transformers import LlamaForCausalLM, AutoTokenizer
-from metrics.llama_metric import LLAMA_metric
+# from transformers import LlamaForCausalLM, AutoTokenizer
+# from metrics.llama_metric import LLAMA_metric
 
 
 def compute_metrics(dataset, metric):
@@ -82,21 +76,15 @@ if __name__ == '__main__':
     with open(args.dataset) as fp:
         dataset = [json.loads(line.strip()) for line in fp]
         metrics = [
-                   SARI(),
-                   AggMeticGraph(args.bert, SARI()),
-                   BLEU(), 
-                   DSARI(),
-                   BERTScore(),
-                   AggMeticGraph(None, BERTScore()),
-                   SLE_metric(True),
-                   AggMeticGraph(None, SLE_metric(True), refless=True),
-                   LENS_metric(),
-                   AggMeticGraph(None, LENS_metric()),
-                   REFEREE(),
-                   AggMeticGraph(None, REFEREE(), refless=True),
-
-                  # LLAMA_metric(model, tokenizer, "prompts/qa/meaning_preservation_one_shot.txt"),
-                  # LLAMA_metric(model, tokenizer, "prompts/meaning_preservation.txt")
+                SARI(),
+                AggMetricGraph(args.bert, SARI()),
+                BLEU(),
+                DSARI(),
+                BERTScore(),
+                AggMetricGraph(None, BERTScore()),
+                LENS_metric(),
+                AggMetricGraph(args.bert, LENS_metric()),
+                # LLAMA_metric(model, tokenizer, "prompts/meaning_preservation.txt")
         ]
         
         compute_metrics(dataset, metrics)

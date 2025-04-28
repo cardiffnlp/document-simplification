@@ -13,32 +13,39 @@ correlation.
 
 5. ``evaluate_*.py``:  Scripts that compute correlation for different datasets.
 
+## Installation instructions
+
+You can install the necessary dependencies using ``pip install -r requirements.txt``
+
 ## Calculate Correlation using Existing Metrics
 
 The input to the correlation scripts is one of the dataset files in `eval_datasets` folder. The scripts print out the corresponding correlation values and also 
 write the metric values for each instance in the `output.jsonl` file. 
 
+Please download the BERT similarity model from [here](https://drive.google.com/file/d/1I43F4OMkCvTUMtTd9Ft3P0hGiQLcFjlT/view)
+
 ### Kendall Correlation on Cochrane dataset
+
 ```
-python3 evaluate_readability_kendall.py --dataset eval_datasets/cochrance_lj.jsonl --output output.jsonl 
+python3 evaluate_kendall.py --dataset eval_datasets/cochrance_lj.jsonl --output output.jsonl --bert ../BERT_wiki/
 ```
 
 ### Pearson Correlation on OneStopQA dataset
 
 ```
-python3 evaluate_readability_pearson.py --dataset eval_datasets/qa.jsonl --output output.jsonl 
+python3 evaluate_pearson.py --dataset eval_datasets/qa.jsonl --output output.jsonl --bert ../BERT_wiki/
 ```
 
 ### Correlation on Wikipedia dataset
 
 ```
-python3 evaluate_readability_pearson.py --dataset eval_datasets/dwiki_final.jsonl --output output.jsonl 
+python3 evaluate_pearson.py --dataset eval_datasets/dwiki_final.jsonl --output output.jsonl --bert ../BERT_wiki/
 ```
 
 ### Correlation on different perturbation datasets
 
 ```
-python3 evaluate_readability_kendall.py --dataset eval_datasets/peturb_deletion.jsonl --output output.jsonl 
+python3 evaluate_kendall.py --dataset eval_datasets/peturb_deletion.jsonl --output output.jsonl --bert ../BERT_wiki/
 ```
 
 | Peturbation dataset files      | Error name in the paper |
@@ -72,8 +79,8 @@ class MyMetric:
         return scores    
        
 ```
-2. Initialize an instance of the new metric and add it to the list of metrics in the `evaluate_readability_kendall.py`
-and `evaluate_readability_pearson.py` files.
+2. Initialize an instance of the new metric and add it to the list of metrics in the `evaluate_kendall.py`
+and `evaluate_pearson.py` files.
 ```
 from metrics.mymetric import MyMetric
 .....
@@ -82,4 +89,15 @@ metrics = [MyMetric()]
 .....
 
 compute_metrics(dataset, metrics)
+```
+
+## Citation
+Please cite if you use the above resources for your research
+```
+@InProceedings{NAACL-2025-Maddela,
+  author = 	"Maddela, Mounica and Alva-Manchego, Fernando",
+  title = 	"Adapting Sentence-Level Metrics for Document-Level Simplification",
+  booktitle = 	"Proceedings of the North American Association for Computational Linguistics (NAACL)",
+  year = 	"2025",
+}
 ```

@@ -122,14 +122,6 @@ def merge_node_groups(node_groups):
                 node = single_nodes_of_type.pop(0)
                 new_node_groups.append(set([start + str(i) for i in range(node[0], node[1])]))
 
-    # print("Old groups")
-    # for group in node_groups:
-    #     print(group)
-
-    # print("New groups")
-    # for group in new_node_groups:
-    #     print(group)
-
     return new_node_groups
           
 def bfs(adj_list):
@@ -148,12 +140,11 @@ def bfs(adj_list):
                 for child in adj_list.get(node, []):
                     if child not in visited:
                         queue.append(child)
-            # print(key, node_group)
             node_groups.append(node_group)
     return node_groups
     
 
-class AggMeticGraph:
+class AggMetricGraph:
 
     CACHE = {}
 
@@ -167,7 +158,7 @@ class AggMeticGraph:
                                             output_hidden_states=True).to("cuda:0")
             self.alignment_model.eval()
         self.sent_model = sent_metric
-        self.cache = AggMeticGraph.CACHE
+        self.cache = AggMetricGraph.CACHE
         self.refless = refless
         self.threshold = threshold
         
@@ -185,23 +176,14 @@ class AggMeticGraph:
             key = (complex, simplified, reference) 
             if key not in self.cache:
 
-                # print("**"* 20)
-                # print(complex)
-                # print(simplified)
-                # print(reference)
-                # print("---" * 20)
-
                 rsents = sent_tokenize(reference)
-                # print(len(csents), len(ssents), len(rsents))
                 rc_matrix, cr_matrix, sc_matrix, cs_matrix = get_score_matrix(
                     csents, rsents, ssents, self.alignment_model, self.tokenizer, 128
                 )
 
                 adj_list = {}
                 if not self.refless:
-                    # consturct_graph(adj_list, rc_matrix, 'r', 'c')
                     consturct_graph(adj_list, cr_matrix, 'c', 'r', self.threshold)
-                # consturct_graph(adj_list, sc_matrix, 's', 'c')
                 consturct_graph(adj_list, cs_matrix, 'c', 's', self.threshold)
 
                 all_comps, all_cands, all_refs = [], [], []
@@ -215,9 +197,6 @@ class AggMeticGraph:
                         cs = " ".join([csents[i] for i in cs])
                         ss = " ".join([ssents[i] for i in ss])
                         rs = " ".join([rsents[i] for i in rs])
-                        # print(cs)
-                        # print(ss)
-                        # print(rs)
                         all_comps.append(cs)
                         all_cands.append(ss)
                         all_refs.append([rs])
@@ -234,7 +213,6 @@ class AggMeticGraph:
             final_score = np.mean(scores)
             ref_scores.append(final_score)
 
-        # print(ref_scores)
         return max(ref_scores)
     
     def compute_metric(self, complex, simplified, references) :
