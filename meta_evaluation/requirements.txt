@@ -1,0 +1,6 @@
+nltk
+numpy=1.26.4
+sacrebleu
+bert_score
+lens-metric
+scikit-learn==1.6.1
